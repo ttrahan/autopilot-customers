@@ -25,7 +25,7 @@ var getUpstreams = function(force, callback) {
         http.get({
             host: CONSUL_DNS,
             port: 8500,
-            path: '/v1/health/service/sales?passing'
+            path: '/v1/health/service/customers?passing'
         }, function(response) {
             var body = '';
             response.on('data', function(d) { body += d; });
