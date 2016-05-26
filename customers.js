@@ -25,7 +25,7 @@ var getUpstreams = function(force, callback) {
         http.get({
             host: CONSUL_DNS,
             port: 8500,
-            path: '/v1/catalog/service/sales'
+            path: '/v1/health/service/sales?passing'
         }, function(response) {
             var body = '';
             response.on('data', function(d) { body += d; });
@@ -33,8 +33,8 @@ var getUpstreams = function(force, callback) {
                 var parsed = JSON.parse(body);
                 hosts = []
                 for (var i = 0; i < parsed.length; i++) {
-                    hosts.push({address: parsed[i].ServiceAddress,
-                                port: parsed[i].ServicePort});
+                    hosts.push({address: parsed[i].Service.Address,
+                                port: parsed[i].Service.Port});
                 }
                 upstreamHosts = hosts; // cache the result
                 callback(hosts);
@@ -46,6 +46,7 @@ var getUpstreams = function(force, callback) {
 // The root route queries the Sales microservice for information about the
 // sales reps associated with each customer, and then returns a JSON response
 // with the merged data.
+// curl http://127.0.0.1:8500/v1/health/service/grader-service?passing
 app.get('/', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
     getUpstreams(false, function(salesHosts) {
